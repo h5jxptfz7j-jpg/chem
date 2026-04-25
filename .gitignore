@@ -1,0 +1,17 @@
+# Виртуальное окружение
+venv/
+
+# Файлы базы данных
+*.db
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Файлы окружения
+.env
+
+# Фронтенд (зависимости и сборка)
+frontend/node_modules/
+frontend/dist/
