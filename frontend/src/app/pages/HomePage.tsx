@@ -1,11 +1,40 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
+import { getProfile } from '../services/api';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfile();
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Не удалось загрузить профиль', error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4">
+      {/* Профиль пользователя */}
+      {profile && (
+        <div className="flex items-center gap-3 mb-4">
+          {profile.photo_url ? (
+            <img src={profile.photo_url} alt="avatar" className="w-12 h-12 rounded-full border-2 border-emerald-400" />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
+              {profile.display_name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+          )}
+          <span className="text-lg font-semibold text-emerald-800">{profile.display_name}</span>
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold text-emerald-800">ChemLab</h1>
       <div className="flex flex-col gap-4 w-full max-w-sm">
         <motion.button

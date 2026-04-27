@@ -5,7 +5,5 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
-      - key: BOT_TOKEN
-        value: 8650153974:AAH-8mjILrdhOIzBMtI3kgnSQzN9W3tflW4
       - key: DEV_MODE
         value: False

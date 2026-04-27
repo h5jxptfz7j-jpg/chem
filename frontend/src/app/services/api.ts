@@ -1,4 +1,14 @@
 import axios from 'axios';
+export {};
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: {
+        initData?: string;
+      };
+    };
+  }
+}
 
 const getInitData = (): string => {
   if (window.Telegram?.WebApp?.initData) {
@@ -8,7 +18,7 @@ const getInitData = (): string => {
 };
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://chem-tgxe.onrender.com',
 });
 
 api.interceptors.request.use((config) => {
@@ -52,11 +62,15 @@ export const getMolecules = (state: string, skip: number = 0, limit: number = 20
 export const getElements = (skip: number = 0, limit: number = 50) =>
   api.get<Molecule[]>(`/elements?skip=${skip}&limit=${limit}`);
 
-export const executeReaction = (reagents: number[], mode: string) =>
-  api.post<ReactionResult>('/reactions/execute', { reagents, mode });
+export const executeReaction = (reagents: number[], mode: string, state?: string) =>
+  api.post<ReactionResult>('/reactions/execute', { reagents, mode, state });
 
 export const getCatalog = () =>
   api.get<CatalogItem[]>('/catalog');
 
 export const deleteReaction = (id: number) =>
   api.delete(`/catalog/${id}`);
+
+export const getProfile = () =>
+  api.get('/profile');
+
