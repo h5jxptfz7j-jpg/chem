@@ -3,7 +3,7 @@ services:
     name: chem
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "rm -f telegram_mini_app.db && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DEV_MODE
         value: False
