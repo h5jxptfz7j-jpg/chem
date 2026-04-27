@@ -3,13 +3,13 @@ import { motion } from 'motion/react';
 interface Props {
   id: number;
   name: string;
-  symbol?: string;          // новый проп
+  symbol?: string;
   isSelected: boolean;
   onSelect: (id: number) => void;
 }
 
 export function MoleculeCard({ id, name, symbol, isSelected, onSelect }: Props) {
-  const display = symbol || name.substring(0, 2); // если symbol не задан, возьмём первые буквы имени
+  const display = symbol || name.substring(0, 2);
 
   return (
     <motion.div

@@ -1,5 +1,7 @@
 import axios from 'axios';
+
 export {};
+
 declare global {
   interface Window {
     Telegram?: {
@@ -18,7 +20,7 @@ const getInitData = (): string => {
 };
 
 const api = axios.create({
-  baseURL: 'https://chem-tgxe.onrender.com',
+  baseURL: 'https://chem-tgxe.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
@@ -42,6 +44,7 @@ export interface ReactionResult {
   cid?: number;
   reaction_key?: string;
   hint?: string;
+  suggestions?: Array<{ symbol: string; name_ru: string }>;
   reaction_date: string;
 }
 
@@ -73,4 +76,3 @@ export const deleteReaction = (id: number) =>
 
 export const getProfile = () =>
   api.get('/profile');
-
