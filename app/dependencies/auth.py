@@ -36,27 +36,26 @@ async def get_telegram_user(
     session: AsyncSession = Depends(get_session)
 ) -> int:
     if DEV_MODE:
-        user_id = 12345
-        # Для тестового режима тоже создаём пользователя, если его нет
-        user_data = {"username": "testuser", "first_name": "Тест", "last_name": "Тестов", "photo_url": None}
+        # В режиме разработки просто возвращаем фиксированный ID для всех запросов
+        return 12345
+
+    init_data = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        init_data = auth_header[len("Bearer "):]
     else:
-        init_data = None
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            init_data = auth_header[len("Bearer "):]
-        else:
-            init_data = request.query_params.get("tgWebAppData")
+        init_data = request.query_params.get("tgWebAppData")
 
-        if not init_data:
-            raise HTTPException(status_code=401, detail="Authentication required")
+    if not init_data:
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-        user_data = validate_telegram_init_data(unquote(init_data), BOT_TOKEN)
-        user_id_str = user_data.get("id") or user_data.get("user_id")
-        if not user_id_str:
-            raise HTTPException(status_code=401, detail="User ID not found in init data")
-        user_id = int(user_id_str)
+    user_data = validate_telegram_init_data(unquote(init_data), BOT_TOKEN)
+    user_id_str = user_data.get("id") or user_data.get("user_id")
+    if not user_id_str:
+        raise HTTPException(status_code=401, detail="User ID not found in init data")
+    user_id = int(user_id_str)
 
-    # Авторегистрация / обновление
+    # Авторегистрация пользователя
     stmt = select(User).where(User.telegram_id == user_id)
     result = await session.execute(stmt)
     user = result.scalar_one_or_none()
