@@ -1,20 +1,9 @@
-<<<<<<< HEAD
 services:
   - type: web
-    name: chemlab-backend
+    name: chem
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "rm -f telegram_mini_app.db && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DEV_MODE
-=======
-services:
-  - type: web
-    name: chemlab-backend
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: DEV_MODE
->>>>>>> 765b15ba7aaedb9d26d2e715d141b39f9d0df068
         value: False
