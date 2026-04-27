@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db, async_session, engine
 from app.seed import seed_database
 from app.routers import molecules, reactions, elements, catalog
+from app.routers import profile
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +28,7 @@ app.include_router(molecules.router)
 app.include_router(reactions.router)
 app.include_router(elements.router)
 app.include_router(catalog.router)
+app.include_router(profile.router)
 
 @app.get("/health")
 async def health():
