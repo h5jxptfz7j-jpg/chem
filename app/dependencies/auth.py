@@ -5,13 +5,12 @@ from urllib.parse import parse_qs, unquote
 from fastapi import Request, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.config import DEV_MODE, BOT_TOKEN, DEV_USER_ID
+from app.config import BOT_TOKEN
 from app.database import get_session
 from app.models.user import User
 
 
 def validate_telegram_init_data(init_data: str, token: str) -> dict:
-    """Проверяет подпись и срок годности initData от Telegram."""
     if not init_data:
         raise HTTPException(status_code=401, detail="Missing initData")
 
@@ -44,43 +43,23 @@ async def get_telegram_user(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ) -> int:
-    if DEV_MODE:
-        user_id = DEV_USER_ID
-        user_data = {
-            "id": str(user_id),
-            "username": f"dev_user_{user_id}",
-            "first_name": "Dev",
-            "last_name": "Test"
-        }
+    init_data = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        init_data = auth_header[len("Bearer "):]
     else:
-        init_data = None
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            init_data = auth_header[len("Bearer "):]
-        else:
-            init_data = request.query_params.get("tgWebAppData")
+        init_data = request.query_params.get("tgWebAppData")
 
-        # Проверяем, не тестовая ли заглушка от фронтенда
-        if init_data and "user=12345&hash=test" in init_data:
-            # Используем DEV_USER_ID (или его значение по умолчанию 12345)
-            user_id = DEV_USER_ID
-            user_data = {
-                "id": str(user_id),
-                "username": f"dev_user_{user_id}",
-                "first_name": "Dev",
-                "last_name": "Test"
-            }
-        else:
-            if not init_data:
-                raise HTTPException(status_code=401, detail="Authentication required")
+    if not init_data:
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-            user_data = validate_telegram_init_data(unquote(init_data), BOT_TOKEN)
-            user_id_str = user_data.get("id") or user_data.get("user_id")
-            if not user_id_str:
-                raise HTTPException(status_code=401, detail="User ID not found in init data")
-            user_id = int(user_id_str)
+    user_data = validate_telegram_init_data(unquote(init_data), BOT_TOKEN)
+    user_id_str = user_data.get("id") or user_data.get("user_id")
+    if not user_id_str:
+        raise HTTPException(status_code=401, detail="User ID not found in init data")
+    user_id = int(user_id_str)
 
-    # Авторегистрация / обновление пользователя
+    # Авторегистрация / обновление
     stmt = select(User).where(User.telegram_id == user_id)
     result = await session.execute(stmt)
     user = result.scalar_one_or_none()
