@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://chem-tgxe.onrender.com',
+  baseURL: 'https://chem-tgxe.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
