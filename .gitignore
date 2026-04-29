@@ -1,17 +1,46 @@
-# Виртуальное окружение
-venv/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Файлы базы данных
+# Dependencies
+node_modules
+frontend/node_modules
+
+# Build output
+dist
+dist-ssr
+frontend/dist
+
+# SQLite database
 *.db
 
-# Кэш Python
+# Python cache
 __pycache__/
-*.pyc
-*.pyo
+app/__pycache__/
+app/**/__pycache__/
 
-# Файлы окружения
+# Virtual environment
+venv/
+
+# Environment variables
 .env
 
-# Фронтенд (зависимости и сборка)
-frontend/node_modules/
-frontend/dist/
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary scripts
+fix_formulas.py
+test_independent.py
