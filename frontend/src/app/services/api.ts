@@ -1,29 +1,13 @@
 import axios from 'axios';
-let savedInitData = '';
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        initData?: string;
-      };
-    };
-  }
-}
-
-export function initTelegramData() {
-  if (window.Telegram?.WebApp?.initData) {
-    savedInitData = window.Telegram.WebApp.initData;
-  }
-}
 
 const api = axios.create({
-  baseURL: 'https://chem-tgxe.onrender.com/api',  // ← прямой URL бэкенда
+  baseURL: 'https://chem-tgxe.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
-  if (savedInitData) {
-    config.headers['Authorization'] = `Bearer ${savedInitData}`;
+  const initData = (window as any).__TG_INIT_DATA__ || '';
+  if (initData) {
+    config.headers['Authorization'] = `Bearer ${initData}`;
   }
   return config;
 });
