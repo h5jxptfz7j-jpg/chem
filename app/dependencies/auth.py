@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, unquote
 from fastapi import Request, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.config import BOT_TOKEN
+from app.config import DEV_MODE, BOT_TOKEN, DEV_USER_ID
 from app.database import get_session
 from app.models.user import User
 
@@ -22,12 +22,8 @@ def validate_telegram_init_data(init_data: str, token: str) -> dict:
     sorted_keys = sorted(parsed.keys())
     data_check_string = "\n".join(f"{key}={parsed[key][0]}" for key in sorted_keys)
 
-    secret_key = hmac.new(
-        b"WebAppData", token.encode(), hashlib.sha256
-    ).digest()
-    computed_hash = hmac.new(
-        secret_key, data_check_string.encode(), hashlib.sha256
-    ).hexdigest()
+    secret_key = hmac.new(b"WebAppData", token.encode(), hashlib.sha256).digest()
+    computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
     if computed_hash != received_hash:
         raise HTTPException(status_code=401, detail="Invalid hash")
@@ -43,6 +39,27 @@ async def get_telegram_user(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ) -> int:
+    # ─────────────────── DEV MODE (пропускаем проверку) ───────────────────
+    if DEV_MODE:
+        user_id = DEV_USER_ID
+        # Проверяем, есть ли уже такой пользователь в базе
+        stmt = select(User).where(User.telegram_id == user_id)
+        result = await session.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        if not user:
+            user = User(
+                telegram_id=user_id,
+                username=f"dev_user_{user_id}",
+                first_name="Dev",
+                last_name="Test"
+            )
+            session.add(user)
+            await session.commit()
+
+        return user_id
+
+    # ─────────────────── ПРОДАКШЕН (полная проверка) ───────────────────
     init_data = None
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
@@ -59,7 +76,7 @@ async def get_telegram_user(
         raise HTTPException(status_code=401, detail="User ID not found in init data")
     user_id = int(user_id_str)
 
-    # Авторегистрация / обновление
+    # Авторегистрация / обновление данных пользователя
     stmt = select(User).where(User.telegram_id == user_id)
     result = await session.execute(stmt)
     user = result.scalar_one_or_none()
