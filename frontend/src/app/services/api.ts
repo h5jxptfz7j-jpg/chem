@@ -1,23 +1,10 @@
 import axios from 'axios';
-let savedInitData = '';
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        initData?: string;
-      };
-    };
-  }
-}
 
-export function initTelegramData() {
-  if (window.Telegram?.WebApp?.initData) {
-    savedInitData = window.Telegram.WebApp.initData;
-  }
-}
+// Берём данные, сохранённые в index.html
+const savedInitData: string = (window as any).__TG_INIT_DATA__ || '';
 
 const api = axios.create({
-  baseURL: 'https://chem-tgxe.onrender.com',
+  baseURL: '/api',
 });
 
 api.interceptors.request.use((config) => {
@@ -26,7 +13,6 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
-
 
 export interface Molecule {
   id: number;
