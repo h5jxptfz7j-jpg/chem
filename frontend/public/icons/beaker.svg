@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Жидкость -->
+  <path d="M138 370 L138 430 Q138 460 256 460 Q374 460 374 430 L374 370Z" fill="#059669" opacity="0.2"/>
+  <!-- Тело стакана -->
+  <path d="M138 100 L138 430 Q138 470 256 470 Q374 470 374 430 L374 100" stroke="#059669" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Дно -->
+  <path d="M138 430 Q138 470 256 470 Q374 470 374 430" stroke="#059669" stroke-width="20" fill="none"/>
+  <!-- Верхний ободок -->
+  <path d="M118 100 L394 100" stroke="#059669" stroke-width="20" stroke-linecap="round"/>
+  <!-- Носик -->
+  <path d="M374 110 Q410 100 420 80" stroke="#059669" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <!-- Деления -->
+  <line x1="138" y1="300" x2="175" y2="300" stroke="#059669" stroke-width="12" stroke-linecap="round" opacity="0.6"/>
+  <line x1="138" y1="350" x2="175" y2="350" stroke="#059669" stroke-width="12" stroke-linecap="round" opacity="0.6"/>
+  <line x1="138" y1="400" x2="175" y2="400" stroke="#059669" stroke-width="12" stroke-linecap="round" opacity="0.6"/>
+  <!-- Пузырьки -->
+  <circle cx="230" cy="390" r="12" stroke="#059669" stroke-width="8" fill="none" opacity="0.4"/>
+  <circle cx="280" cy="410" r="8" stroke="#059669" stroke-width="8" fill="none" opacity="0.3"/>
+</svg>

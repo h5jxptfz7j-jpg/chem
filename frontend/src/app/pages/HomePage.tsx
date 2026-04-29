@@ -38,26 +38,29 @@ export function HomePage() {
       <h1 className="text-3xl font-bold text-emerald-800">ChemLab</h1>
       <div className="flex flex-col gap-4 w-full max-w-sm">
         <motion.button
-          whileHover={{ scale: 1.05 }}
+         whileHover={{ scale: 1.05 }}
           onClick={() => navigate('/free-reaction')}
-          className="bg-emerald-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-emerald-200 text-lg font-semibold"
-        >
+          className="bg-emerald-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-emerald-200 text-lg font-semibold flex items-center justify-center gap-3"
+>
+          <img src="/icons/flask-conical.svg" className="w-7 h-7 brightness-0 invert" />
           Самостоятельная реакция
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate('/states')}
-          className="bg-lime-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-lime-200 text-lg font-semibold"
-        >
-          Агрегатные состояния
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate('/catalog')}
-          className="bg-teal-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-teal-200 text-lg font-semibold"
-        >
-          Мой каталог реакций
-        </motion.button>
+          </motion.button>
+  <motion.button
+  whileHover={{ scale: 1.05 }}
+  onClick={() => navigate('/states')}
+  className="bg-lime-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-lime-200 text-lg font-semibold flex items-center justify-center gap-3"
+>
+  <img src="/icons/layers.svg" className="w-7 h-7 brightness-0 invert" />
+  Агрегатные состояния
+</motion.button>
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  onClick={() => navigate('/catalog')}
+  className="bg-teal-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-teal-200 text-lg font-semibold flex items-center justify-center gap-3"
+>
+  <img src="/icons/book-open.svg" className="w-7 h-7 brightness-0 invert" />
+  Мой каталог реакций
+</motion.button>
       </div>
     </div>
   );

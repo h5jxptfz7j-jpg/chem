@@ -5,9 +5,9 @@ import './index.css'
 import { Layout } from './app/components/Layout'
 import { HomePage } from './app/pages/HomePage'
 import { FreeReactionPage } from './app/pages/FreeReactionPage'
-import { StatesPage } from './app/pages/StatesPage'
-import { ReactionPage } from './app/pages/ReactionPage'
 import { CatalogPage } from './app/pages/CatalogPage'
+import { ReactionTypesPage } from './app/pages/ReactionTypesPage'
+import { ReactionTypePage } from './app/pages/ReactionTypePage'
 
 const router = createBrowserRouter([
   {
@@ -16,8 +16,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: HomePage },
       { path: "free-reaction", Component: FreeReactionPage },
-      { path: "states", Component: StatesPage },
-      { path: "reaction/:state", Component: ReactionPage },
+      { path: "states", Component: ReactionTypesPage },            
+      { path: "reaction-types", Component: ReactionTypesPage },    
+      { path: "reaction-types/:type", Component: ReactionTypePage },
       { path: "catalog", Component: CatalogPage },
     ],
   },

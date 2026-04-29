@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { CatalogItem } from '../services/api';
 import { getCatalog, deleteReaction } from '../services/api';
+import { useNavigate } from 'react-router';
 
 export function CatalogPage() {
+  const navigate = useNavigate(); // <-- эта строка отсутствовала, из-за неё была ошибка
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -33,6 +35,14 @@ export function CatalogPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
+      <button
+        onClick={() => navigate('/')}
+        className="flex items-center gap-1 text-emerald-600 hover:text-emerald-800 text-sm mb-4"
+      >
+        <img src="/icons/arrow-left.svg" className="w-5 h-5" />
+        На главную
+      </button>
+
       <h2 className="text-2xl font-bold text-emerald-700">Мой каталог реакций</h2>
       {loading ? (
         <p className="mt-4 text-gray-500">Загрузка...</p>
@@ -53,11 +63,8 @@ export function CatalogPage() {
                     {new Date(item.date_added).toLocaleString()} &bull; {item.mode === 'independent' ? 'Самостоятельная' : 'Агрегатная'}
                   </p>
                 </div>
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Удалить
+                <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700" title="Удалить">
+                  <img src="/icons/trash.svg" className="w-5 h-5" />
                 </button>
               </div>
             </div>
