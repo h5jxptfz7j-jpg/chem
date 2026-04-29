@@ -65,31 +65,17 @@ export const getMolecules = (state: string, skip: number = 0, limit: number = 20
 export const getElements = (skip: number = 0, limit: number = 50) =>
   api.get<Molecule[]>(`/elements?skip=${skip}&limit=${limit}`);
 
-export function executeReaction(
+export const executeReaction = (
   reagents: number[],
   mode: string,
   state?: string
-): Promise<any>; // сигнатура для обратной совместимости
-export function executeReaction(
-  reagents: { id: number; state?: string }[],
-  mode: string,
-  state?: string
-): Promise<any>;
-export function executeReaction(
-  reagents: number[] | { id: number; state?: string }[],
-  mode: string,
-  state?: string
-) {
-  // нормализуем: если передан массив чисел, превращаем в объекты
-  const normalized = reagents.map((r) =>
-    typeof r === 'number' ? { id: r } : r
-  );
+) => {
   return api.post<ReactionResult>('/reactions/execute', {
-    reagents: normalized,
+    reagents: reagents,
     mode,
     state,
   });
-}
+};
 
 export const getCatalog = () =>
   api.get<CatalogItem[]>('/catalog');

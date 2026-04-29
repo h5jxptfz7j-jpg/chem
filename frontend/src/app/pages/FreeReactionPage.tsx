@@ -59,8 +59,10 @@ export function FreeReactionPage() {
         toast.info(response.data.hint);
       } else if (response.data.suggestions?.length) {
         toast.info('Реакция не найдена. Посмотри подсказки в результате.');
-      } else {
+      } else if (response.data.product_name) {
         toast.success('Реакция успешно выполнена!');
+      } else {
+        toast.info('Реакция не дала результата');
       }
     } catch {
       toast.error('Ошибка при выполнении реакции');

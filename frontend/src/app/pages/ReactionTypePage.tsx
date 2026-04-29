@@ -83,17 +83,29 @@ export function ReactionTypePage() {
   const handleLeftSelect = (id: number) => setSelectedLeft(prev => prev === id ? null : id);
   const handleRightSelect = (id: number) => setSelectedRight(prev => prev === id ? null : id);
 
-  const canExecute = selectedLeft && selectedRight;
+  const canExecute = selectedLeft !== null && selectedRight !== null;
 
   const handleExecute = async () => {
     if (!canExecute || !config) return;
+    if (selectedLeft === null || selectedRight === null) return;
+    
     try {
-      // Не передаём state, чтобы бэкенд искал молекулы во всех таблицах
-      const response = await executeReaction([selectedLeft, selectedRight], 'aggregate');
+      // Передаём ID выбранных молекул
+      const response = await executeReaction(
+        [selectedLeft, selectedRight], 
+        'aggregate'
+      );
       setResult(response.data);
-      if (response.data.hint) toast.info(response.data.hint);
-      else toast.success('Реакция успешно выполнена!');
-    } catch { toast.error('Ошибка при выполнении реакции'); }
+      if (response.data.hint) {
+        toast.info(response.data.hint);
+      } else if (response.data.product_name) {
+        toast.success('Реакция успешно выполнена!');
+      } else {
+        toast.info('Реакция не дала результата');
+      }
+    } catch { 
+      toast.error('Ошибка при выполнении реакции'); 
+    }
   };
 
   if (!config) return <div className="p-4 text-red-500">Неизвестный тип реакции</div>;

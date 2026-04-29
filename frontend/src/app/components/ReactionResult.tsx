@@ -34,6 +34,12 @@ export function ReactionResult({ result, onClose }: Props) {
           </>
         )}
 
+        {result.hint && (
+          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-blue-700 text-sm">{result.hint}</p>
+          </div>
+        )}
+
         {result.suggestions && result.suggestions.length > 0 && (
           <div className="mt-3">
             <p className="font-medium text-emerald-800">С этим элементом лучше всего сочетаются:</p>
@@ -47,8 +53,8 @@ export function ReactionResult({ result, onClose }: Props) {
           </div>
         )}
 
-        {result.hint && !result.suggestions && (
-          <p className="text-blue-600 mt-2">{result.hint}</p>
+        {!result.product_name && !result.hint && !result.suggestions?.length && (
+          <p className="text-gray-500 mt-2">Реакция не дала результата</p>
         )}
 
         <button

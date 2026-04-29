@@ -5,35 +5,29 @@ from datetime import datetime
 from app.database import get_session
 from app.dependencies.auth import get_telegram_user
 from app.models.reaction import PredefinedReaction, UserReaction
-from app.models.reaction_hint import ReactionHint  
+from app.models.reaction_hint import ReactionHint
 from app.models.element import Element
-from app.models.state_molecules import LiquidMolecule, GasMolecule, SolidMolecule
+from app.models.molecule import Molecule
 from app.models.compatibility import PredefinedCompatibility
 from app.schemas.reaction import ReactionRequest, ReactionResponse
 from app.services.pubchem import get_compound_by_formula
 
 router = APIRouter(prefix="/reactions", tags=["reactions"])
 
-ALL_STATE_MODELS = [GasMolecule, LiquidMolecule, SolidMolecule]
 
-
-async def find_molecule_in_all_tables(mol_id: int, session: AsyncSession):
-    """Ищет молекулу по id во всех таблицах агрегатных состояний."""
-    for model in ALL_STATE_MODELS:
-        result = await session.execute(select(model).where(model.id == mol_id))
-        mol = result.scalar_one_or_none()
-        if mol:
-            return mol
-    return None
-
-
-async def build_reaction_key(formulas: list[str]) -> str:
-    """Строит ключ реакции: сортирует формулы и соединяет через '+'."""
+def make_key(*formulas: str) -> str:
     return "+".join(sorted(formulas))
 
 
-async def get_hint_for_formula(formula: str, session: AsyncSession) -> str:
-    """Генерирует подсказку: с чем реагирует данное вещество."""
+async def get_hint_for_key(reaction_key: str, formula: str, session: AsyncSession) -> str:
+    # 1. Готовая подсказка из таблицы reaction_hints
+    hint_row = (await session.execute(
+        select(ReactionHint).where(ReactionHint.reaction_key == reaction_key)
+    )).scalar_one_or_none()
+    if hint_row:
+        return hint_row.hint_text
+
+    # 2. Генерируем из predefined_reactions
     possible = (await session.execute(
         select(PredefinedReaction)
         .where(PredefinedReaction.reaction_key.contains(formula))
@@ -58,67 +52,40 @@ async def execute_reaction(
     user_id: int = Depends(get_telegram_user),
     session: AsyncSession = Depends(get_session)
 ):
-    reagent_ids = [item.id for item in payload.reagents]
+    reagent_ids = payload.reagents
     mode = payload.mode
 
-    # ─────────────────────────── AGGREGATE MODE ───────────────────────────
+    # ─────────────────────── AGGREGATE MODE ───────────────────────
     if mode == "aggregate":
-        state_table_map = {
-            "liquid": LiquidMolecule,
-            "gas": GasMolecule,
-            "solid": SolidMolecule,
-        }
-
-        reagents = []
-        for item in payload.reagents:
-            mol = None
-            # Если передан state, ищем только в указанной таблице
-            if item.state and item.state in state_table_map:
-                model = state_table_map[item.state]
-                result = await session.execute(select(model).where(model.id == item.id))
-                mol = result.scalar_one_or_none()
-            else:
-                # Старый режим: ищем во всех таблицах
-                mol = await find_molecule_in_all_tables(item.id, session)
-            if not mol:
-                raise HTTPException(status_code=400, detail=f"Reagent id={item.id} not found")
-            reagents.append(mol)
+        # Ищем молекулы в единой таблице molecules
+        result = await session.execute(
+            select(Molecule).where(Molecule.id.in_(reagent_ids))
+        )
+        reagents = result.scalars().all()
+        
+        # Сортируем в порядке исходных ID
+        reagents = sorted(reagents, key=lambda r: reagent_ids.index(r.id))
 
         if len(reagents) != len(reagent_ids):
             raise HTTPException(status_code=400, detail="Some reagents not found")
 
-        # Строим ключ: сортируем формулы
         formulas = [r.formula for r in reagents]
-        reaction_key = await build_reaction_key(formulas)
+        reaction_key = make_key(*formulas)
 
-        # Ищем реакцию в БД
         reaction = (await session.execute(
             select(PredefinedReaction).where(PredefinedReaction.reaction_key == reaction_key)
         )).scalar_one_or_none()
 
         if not reaction:
-            # Сначала пробуем найти точную подсказку в ReactionHint
-            hint_obj = (await session.execute(
-                select(ReactionHint).where(ReactionHint.reaction_key == reaction_key)
-            )).scalar_one_or_none()
-            if hint_obj:
-                hint_text = hint_obj.hint_text
-            else:
-                # Fallback: генерируем умную подсказку на основе реальных реакций
-                formula = reagents[0].formula
-                hint_text = await get_hint_for_formula(formula, session)
+            hint_text = await get_hint_for_key(reaction_key, formulas[0], session)
             return ReactionResponse(
-                product_name="",
-                product_formula="",
-                product_image_url=None,
-                cid=None,
-                reaction_key=None,
+                product_name="", product_formula="",
+                product_image_url=None, cid=None,
+                reaction_key=None, suggestions=None,
                 hint=hint_text,
-                suggestions=None,
                 reaction_date=datetime.utcnow()
             )
 
-        # Реакция найдена — получаем продукт из PubChem
         try:
             product_data = await get_compound_by_formula(reaction.product_formula, session)
         except HTTPException as e:
@@ -142,12 +109,11 @@ async def execute_reaction(
             product_image_url=product_data["image_url"],
             cid=product_data["cid"],
             reaction_key=reaction_key,
-            suggestions=None,
-            hint=None,
+            suggestions=None, hint=None,
             reaction_date=user_reaction.date_added
         )
 
-    # ─────────────────────────── INDEPENDENT MODE ───────────────────────────
+    # ─────────────────────── INDEPENDENT MODE ───────────────────────
     elif mode == "independent":
         elements = (await session.execute(
             select(Element).where(Element.id.in_(reagent_ids))
@@ -187,24 +153,15 @@ async def execute_reaction(
                         select(Element).where(Element.id == other_id)
                     )).scalar_one_or_none()
                     if other:
-                        suggested_elements.append({
-                            "symbol": other.symbol,
-                            "name_ru": other.name_ru,
-                        })
+                        suggested_elements.append({"symbol": other.symbol, "name_ru": other.name_ru})
                         seen_ids.add(other_id)
 
-            hint_msg = None
-            if not suggested_elements:
-                hint_msg = f"Нет известных реакций для элемента {e1.symbol}"
-
             return ReactionResponse(
-                product_name="",
-                product_formula="",
-                product_image_url=None,
-                cid=None,
+                product_name="", product_formula="",
+                product_image_url=None, cid=None,
                 reaction_key=None,
-                suggestions=suggested_elements if suggested_elements else None,
-                hint=hint_msg,
+                suggestions=suggested_elements or None,
+                hint=None if suggested_elements else f"Нет известных реакций для {e1.symbol}",
                 reaction_date=datetime.utcnow()
             )
 
@@ -230,9 +187,7 @@ async def execute_reaction(
             product_formula=product_data["formula"],
             product_image_url=product_data["image_url"],
             cid=product_data["cid"],
-            reaction_key=None,
-            suggestions=None,
-            hint=None,
+            reaction_key=None, suggestions=None, hint=None,
             reaction_date=user_reaction.date_added
         )
 
