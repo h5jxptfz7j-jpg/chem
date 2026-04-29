@@ -20,5 +20,11 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      setTimeout(() => {
+        alert('Telegram: ' + (window.Telegram ? 'OK' : 'НЕТ') + 
+              '\ninitData: ' + (window.__TG_INIT_DATA__ ? 'ЕСТЬ' : 'ПУСТО'));
+      }, 2000);
+    </script>
   </body>
 </html>
