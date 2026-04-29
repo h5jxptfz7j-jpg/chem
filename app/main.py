@@ -30,6 +30,10 @@ app.include_router(elements.router)
 app.include_router(catalog.router)
 app.include_router(profile.router)
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Chemistry API is running"}
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
