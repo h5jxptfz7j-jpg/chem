@@ -1,9 +1,8 @@
-﻿from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import List
+from fastapi import APIRouter, HTTPException, Query, Depends 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_session
-from app.dependencies.auth import get_telegram_user
 from app.models.molecule import Molecule
 from app.schemas.molecule import MoleculeOut
 
@@ -14,7 +13,6 @@ async def get_molecules(
     state: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    user_id: int = Depends(get_telegram_user),
     session: AsyncSession = Depends(get_session)
 ):
     if state not in ("gas", "liquid", "solid"):
