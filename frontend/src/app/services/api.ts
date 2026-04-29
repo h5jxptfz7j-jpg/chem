@@ -16,7 +16,7 @@ const getInitData = (): string => {
   if (window.Telegram?.WebApp?.initData) {
     return window.Telegram.WebApp.initData;
   }
-  return 'user=12345&hash=test';
+  return '';
 };
 
 const api = axios.create({
