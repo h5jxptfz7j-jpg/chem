@@ -1,17 +1,12 @@
 import axios from 'axios';
 
-Vite использует import.meta.env, а не process.env
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://chem-tgxe.onrender.com';
-
 const api = axios.create({
-  baseURL: BASE_URL,
-  timeout: 10000,
+  baseURL: '/api',
 });
 
 api.interceptors.request.use((config) => {
   const initData = (window as any).__TG_INIT_DATA__ || '';
   if (initData) {
-    config.headers['X-Telegram-Init-Data'] = initData;
     config.headers['Authorization'] = `Bearer ${initData}`;
   }
   return config;
