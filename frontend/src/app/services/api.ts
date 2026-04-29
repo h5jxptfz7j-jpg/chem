@@ -20,7 +20,7 @@ const getInitData = (): string => {
 };
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://chem-tgxe.onrender.com',
 });
 
 api.interceptors.request.use((config) => {
