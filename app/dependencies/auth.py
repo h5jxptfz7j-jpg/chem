@@ -39,25 +39,26 @@ async def get_telegram_user(
     request: Request,
     session: AsyncSession = Depends(get_session)
 ) -> int:
-    # ─────────────────── DEV MODE (пропускаем проверку) ───────────────────
+    # ─────────────────── DEV MODE 
     if DEV_MODE:
-        user_id = DEV_USER_ID
-        # Проверяем, есть ли уже такой пользователь в базе
-        stmt = select(User).where(User.telegram_id == user_id)
-        result = await session.execute(stmt)
-        user = result.scalar_one_or_none()
+        return DEV_USER_ID
 
-        if not user:
-            user = User(
-                telegram_id=user_id,
-                username=f"dev_user_{user_id}",
-                first_name="Dev",
-                last_name="Test"
-            )
-            session.add(user)
-            await session.commit()
+    init_data = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        init_data = auth_header[len("Bearer "):]
+    else:
+        init_data = request.headers.get("X-Telegram-Init-Data") or request.query_params.get("tgWebAppData")
 
-        return user_id
+    if not init_data:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    user_data = validate_telegram_init_data(unquote(init_data), BOT_TOKEN)
+    user_id_str = user_data.get("id") or user_data.get("user_id")
+    if not user_id_str:
+        raise HTTPException(status_code=401, detail="User ID not found in init data")
+    
+    return int(user_id_str)
 
     # ─────────────────── ПРОДАКШЕН (полная проверка) ───────────────────
     init_data = None
