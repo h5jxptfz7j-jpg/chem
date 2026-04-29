@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEV_MODE = os.getenv("DEV_MODE", "True").lower() in ("true", "1", "yes")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "telegram_bot_token")
+DEV_MODE = os.getenv("DEV_MODE", "False").lower() in ("true", "1", "yes")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "your_telegram_bot_token")
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./telegram_mini_app.db")
+DEV_USER_ID = int(os.getenv("DEV_USER_ID", "12345"))
