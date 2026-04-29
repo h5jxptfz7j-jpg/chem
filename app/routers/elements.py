@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Query 
+from typing import Listобязателен!
+from fastapi import APIRouter, Query, Depends 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_session
