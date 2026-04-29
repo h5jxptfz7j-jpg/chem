@@ -1,9 +1,6 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-import os
 from app.database import init_db, async_session, engine
 from app.seed import seed_database
 from app.routers import molecules, reactions, elements, catalog
@@ -27,7 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(molecules.router)
 app.include_router(reactions.router)
 app.include_router(elements.router)
@@ -37,21 +33,6 @@ app.include_router(profile.router)
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-if os.path.exists("static"):
-    app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
-    app.mount("/icons", StaticFiles(directory="static/icons"), name="icons")
-
-    @app.get("/{full_path:path}")
-    async def serve_frontend(full_path: str):
-        file_path = os.path.join("static", full_path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(file_path)
-        return FileResponse("static/index.html")
-else:
-    @app.get("/")
-    async def root():
-        return {"message": "API server running"}
 
 if __name__ == "__main__":
     import uvicorn
