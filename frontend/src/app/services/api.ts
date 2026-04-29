@@ -1,10 +1,24 @@
 import axios from 'axios';
+let savedInitData = '';
 
-// Берём данные, сохранённые в index.html
-const savedInitData: string = (window as any).__TG_INIT_DATA__ || '';
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: {
+        initData?: string;
+      };
+    };
+  }
+}
+
+export function initTelegramData() {
+  if (window.Telegram?.WebApp?.initData) {
+    savedInitData = window.Telegram.WebApp.initData;
+  }
+}
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://chem-tgxe.onrender.com/api',  // ← прямой URL бэкенда
 });
 
 api.interceptors.request.use((config) => {
