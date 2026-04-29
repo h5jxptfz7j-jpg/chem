@@ -4,7 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>ChemLab</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      function saveInitData() {
+        window.__TG_INIT_DATA__ = window.Telegram?.WebApp?.initData || '';
+        if (!window.__TG_INIT_DATA__) {
+          setTimeout(saveInitData, 100);
+        }
+      }
+      setTimeout(saveInitData, 200);
+    </script>
     <script type="module" crossorigin src="/assets/index-BDHM1FDR.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-DHCIRGqp.css">
   </head>
