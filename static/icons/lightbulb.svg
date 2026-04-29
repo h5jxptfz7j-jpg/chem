@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Свечение -->
+  <circle cx="256" cy="210" r="130" fill="#84CC16" opacity="0.1"/>
+  <!-- Тело лампочки -->
+  <path d="M180 210 Q180 140 256 120 Q332 140 332 210 Q332 260 300 290 L300 340 L212 340 L212 290 Q180 260 180 210Z" fill="#84CC16" opacity="0.25" stroke="#84CC16" stroke-width="18" stroke-linejoin="round"/>
+  <!-- Цоколь -->
+  <rect x="212" y="340" width="88" height="28" rx="6" fill="#059669" opacity="0.5" stroke="#059669" stroke-width="14"/>
+  <rect x="212" y="368" width="88" height="28" rx="6" fill="#059669" opacity="0.4" stroke="#059669" stroke-width="14"/>
+  <!-- Нить накаливания / атом -->
+  <path d="M230 260 Q256 220 282 260" stroke="#84CC16" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <circle cx="256" cy="200" r="16" fill="#84CC16" opacity="0.8"/>
+  <!-- Лучи -->
+  <line x1="256" y1="70" x2="256" y2="46" stroke="#84CC16" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+  <line x1="340" y1="96" x2="356" y2="80" stroke="#84CC16" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+  <line x1="370" y1="182" x2="394" y2="182" stroke="#84CC16" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+  <line x1="172" y1="96" x2="156" y2="80" stroke="#84CC16" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+  <line x1="142" y1="182" x2="118" y2="182" stroke="#84CC16" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+</svg>

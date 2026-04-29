@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Левая страница -->
+  <path d="M50 120 Q50 100 70 96 Q140 80 256 100 L256 420 Q140 400 70 416 Q50 420 50 400Z" fill="#059669" opacity="0.15" stroke="#059669" stroke-width="16" stroke-linejoin="round"/>
+  <!-- Правая страница -->
+  <path d="M462 120 Q462 100 442 96 Q372 80 256 100 L256 420 Q372 400 442 416 Q462 420 462 400Z" fill="#059669" opacity="0.15" stroke="#059669" stroke-width="16" stroke-linejoin="round"/>
+  <!-- Корешок -->
+  <line x1="256" y1="100" x2="256" y2="420" stroke="#059669" stroke-width="10"/>
+  <!-- Строки на левой странице -->
+  <line x1="100" y1="180" x2="220" y2="172" stroke="#059669" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <line x1="100" y1="220" x2="220" y2="212" stroke="#059669" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <line x1="100" y1="260" x2="200" y2="253" stroke="#059669" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+  <line x1="100" y1="300" x2="220" y2="293" stroke="#059669" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <!-- Формула на правой странице -->
+  <line x1="292" y1="180" x2="412" y2="172" stroke="#14B8A6" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <line x1="292" y1="220" x2="380" y2="213" stroke="#14B8A6" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+  <line x1="292" y1="260" x2="412" y2="253" stroke="#14B8A6" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  <line x1="292" y1="300" x2="360" y2="294" stroke="#14B8A6" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+</svg>

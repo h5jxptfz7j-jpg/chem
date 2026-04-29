@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Нижний слой (твёрдый) -->
+  <path d="M80 380 L256 440 L432 380 L256 320Z" fill="#059669" opacity="0.4"/>
+  <path d="M80 380 L256 440 L432 380 L256 320Z" stroke="#059669" stroke-width="14" stroke-linejoin="round"/>
+  <!-- Средний слой (жидкий) -->
+  <path d="M80 280 L256 340 L432 280 L256 220Z" fill="#14B8A6" opacity="0.45"/>
+  <path d="M80 280 L256 340 L432 280 L256 220Z" stroke="#14B8A6" stroke-width="14" stroke-linejoin="round"/>
+  <!-- Верхний слой (газ) -->
+  <path d="M80 180 L256 240 L432 180 L256 120Z" fill="#84CC16" opacity="0.5"/>
+  <path d="M80 180 L256 240 L432 180 L256 120Z" stroke="#84CC16" stroke-width="14" stroke-linejoin="round"/>
+</svg>
