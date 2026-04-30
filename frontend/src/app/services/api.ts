@@ -7,7 +7,13 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const initData = (window as any).__TG_INIT_DATA__ || '';
   if (initData) {
+    // Основной способ: заголовок Authorization
     config.headers['Authorization'] = `Bearer ${initData}`;
+    // Дополнительно передаём в query-параметрах (надёжнее для CORS)
+    config.params = {
+      ...config.params,
+      tgWebAppData: initData,
+    };
   }
   return config;
 });
@@ -49,8 +55,19 @@ export const getMolecules = (state: string, skip: number = 0, limit: number = 20
 export const getElements = (skip: number = 0, limit: number = 50) =>
   api.get<Molecule[]>(`/elements?skip=${skip}&limit=${limit}`);
 
-export const executeReaction = (reagents: number[], mode: string, state?: string) => {
-  return api.post<ReactionResult>('/reactions/execute', { reagents, mode, state });
+export const executeReaction = (
+  reagents: number[] | { id: number; state?: string }[],
+  mode: string,
+  state?: string
+) => {
+  const normalized = reagents.map((r) =>
+    typeof r === 'number' ? { id: r } : r
+  );
+  return api.post<ReactionResult>('/reactions/execute', {
+    reagents: normalized,
+    mode,
+    state,
+  });
 };
 
 export const getCatalog = () => api.get<CatalogItem[]>('/catalog');
