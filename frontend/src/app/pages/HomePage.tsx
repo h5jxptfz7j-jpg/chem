@@ -6,25 +6,17 @@ import { getProfile } from '../services/api';
 export function HomePage() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
-  const [error, setError] = useState<string>('');
-  const [initDataPreview, setInitDataPreview] = useState<string>('');
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
-    // Показываем первые 150 символов initData прямо на экране
-    const raw = window.Telegram?.WebApp?.initData || '';
-    setInitDataPreview(raw ? raw.substring(0, 150) : 'НЕТ ДАННЫХ (initData пустой)');
-
     const fetchProfile = async () => {
       try {
         const response = await getProfile();
         setProfile(response.data);
-      } catch (err: any) {
-        const msg =
-          err?.response?.data?.detail ||
-          err?.response?.status ||
-          err?.message ||
-          'Неизвестная ошибка';
-        setError(String(msg));
+      } catch (error) {
+        console.error('Не удалось загрузить профиль', error);
+      } finally {
+        setProfileLoading(false);
       }
     };
     fetchProfile();
@@ -33,28 +25,33 @@ export function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4">
 
-      {/* ── DEBUG БЛОК (удали после проверки) ── */}
-      <div className="w-full max-w-sm bg-gray-100 rounded-xl p-3 text-xs text-gray-700 break-all space-y-1">
-        <p className="font-bold text-gray-500">DEBUG</p>
-        <p><span className="font-semibold">initData:</span> {initDataPreview}</p>
-        {error && <p className="text-red-600"><span className="font-semibold">Ошибка профиля:</span> {error}</p>}
-        {profile && <p className="text-green-600"><span className="font-semibold">Профиль:</span> {JSON.stringify(profile)}</p>}
-      </div>
-      {/* ── КОНЕЦ DEBUG БЛОКА ── */}
-
       {/* Профиль пользователя */}
-      {profile && (
-        <div className="flex items-center gap-3 mb-4">
-          {profile.photo_url ? (
-            <img src={profile.photo_url} alt="avatar" className="w-12 h-12 rounded-full border-2 border-emerald-400" />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
-              {profile.display_name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-          )}
-          <span className="text-lg font-semibold text-emerald-800">{profile.display_name}</span>
-        </div>
-      )}
+      <div className="flex items-center gap-3 mb-2 h-14">
+        {profileLoading ? (
+          // Скелетон пока грузится
+          <div className="flex items-center gap-3 animate-pulse">
+            <div className="w-12 h-12 rounded-full bg-emerald-200" />
+            <div className="w-28 h-5 rounded-lg bg-emerald-100" />
+          </div>
+        ) : profile ? (
+          <>
+            {profile.photo_url ? (
+              <img
+                src={profile.photo_url}
+                alt="avatar"
+                className="w-12 h-12 rounded-full border-2 border-emerald-400 object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg">
+                {profile.display_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            )}
+            <span className="text-lg font-semibold text-emerald-800">
+              {profile.display_name}
+            </span>
+          </>
+        ) : null}
+      </div>
 
       <h1 className="text-3xl font-bold text-emerald-800">ChemLab</h1>
 
