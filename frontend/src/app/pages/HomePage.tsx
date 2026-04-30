@@ -39,10 +39,10 @@ export function HomePage() {
               <img
                 src={profile.photo_url}
                 alt="avatar"
-                className="w-16 h-14 rounded-full border-2 border-emerald-400 object-cover"
+                className="w-15 h-15 rounded-full border-2 border-emerald-400 object-cover"
               />
             ) : (
-              <div className="w-16 h-14 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg">
+              <div className="w-15 h-15 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg">
                 {profile.display_name?.charAt(0).toUpperCase() || 'U'}
               </div>
             )}
