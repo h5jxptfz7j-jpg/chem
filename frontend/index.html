@@ -19,11 +19,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      setTimeout(() => {
-        alert('Telegram: ' + (window.Telegram ? 'OK' : 'НЕТ') + 
-              '\ninitData: ' + (window.Telegram?.WebApp?.initData ? 'ЕСТЬ' : 'ПУСТО'));
-      }, 1500);
-    </script>
   </body>
 </html>
