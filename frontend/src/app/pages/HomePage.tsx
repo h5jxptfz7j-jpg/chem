@@ -6,7 +6,6 @@ import { getProfile } from '../services/api';
 export function HomePage() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -15,73 +14,78 @@ export function HomePage() {
         setProfile(response.data);
       } catch (error) {
         console.error('Не удалось загрузить профиль', error);
-      } finally {
-        setProfileLoading(false);
       }
     };
     fetchProfile();
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4">
-
-      {/* Профиль пользователя */}
-      <div className="flex items-center gap-3 mb-2 h-14">
-        {profileLoading ? (
-          // Скелетон пока грузится
-          <div className="flex items-center gap-3 animate-pulse">
-            <div className="w-12 h-12 rounded-full bg-emerald-200" />
-            <div className="w-28 h-5 rounded-lg bg-emerald-100" />
-          </div>
-        ) : profile ? (
-          <>
-            {profile.photo_url ? (
-              <img
-                src={profile.photo_url}
-                alt="avatar"
-                className="w-15 h-15 rounded-full border-2 border-emerald-400 object-cover"
-              />
-            ) : (
-              <div className="w-15 h-15 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg">
-                {profile.display_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-            )}
-            <span className="text-lg font-semibold text-emerald-800">
-              {profile.display_name}
-            </span>
-          </>
-        ) : null}
+    <div className="relative flex flex-col items-center justify-between min-h-screen p-6 overflow-hidden bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+      {/* Декоративный фон */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-5 w-40 h-40 bg-emerald-500 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-5 w-60 h-60 bg-purple-500 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-blue-400 rounded-full blur-3xl" />
       </div>
 
-      <h1 className="text-3xl font-bold text-emerald-800">ChemLab</h1>
+      {/* Верхняя часть — аватар */}
+      {profile && (
+        <div className="relative z-10 flex flex-col items-center gap-2 mt-8">
+          {profile.photo_url ? (
+            <img src={profile.photo_url} alt="avatar" className="w-16 h-16 rounded-full border-2 border-emerald-400 shadow-lg" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+              {profile.display_name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+          )}
+          <span className="text-white/80 text-sm font-medium">{profile.display_name || 'Пользователь'}</span>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-4 w-full max-w-sm">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate('/free-reaction')}
-          className="bg-emerald-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-emerald-200 text-lg font-semibold flex items-center justify-center gap-3"
-        >
-          <img src="/icons/flask-conical.svg" className="w-7 h-7 brightness-0 invert" />
-          Самостоятельная реакция
-        </motion.button>
+      {/* Пустое пространство по центру */}
+      <div className="flex-1" />
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate('/states')}
-          className="bg-lime-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-lime-200 text-lg font-semibold flex items-center justify-center gap-3"
+      {/* Нижняя часть — кнопки */}
+      <div className="relative z-10 flex flex-col items-center gap-6 mb-8 w-full max-w-sm">
+        <motion.h1 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-bold text-white tracking-wider"
         >
-          <img src="/icons/layers.svg" className="w-7 h-7 brightness-0 invert" />
-          Агрегатные состояния
-        </motion.button>
+          ChemLab
+        </motion.h1>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={() => navigate('/catalog')}
-          className="bg-teal-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-teal-200 text-lg font-semibold flex items-center justify-center gap-3"
-        >
-          <img src="/icons/book-open.svg" className="w-7 h-7 brightness-0 invert" />
-          Мой каталог реакций
-        </motion.button>
+        <div className="flex flex-col gap-4 w-full">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/free-reaction')}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-emerald-500/25 text-base font-semibold flex items-center justify-center gap-3"
+          >
+            <img src="/icons/flask-conical.svg" className="w-6 h-6 brightness-0 invert" />
+            Самостоятельная реакция
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/states')}
+            className="bg-gradient-to-r from-lime-500 to-green-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-lime-500/25 text-base font-semibold flex items-center justify-center gap-3"
+          >
+            <img src="/icons/layers.svg" className="w-6 h-6 brightness-0 invert" />
+            Агрегатные состояния
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/catalog')}
+            className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white py-4 px-6 rounded-2xl shadow-lg shadow-teal-500/25 text-base font-semibold flex items-center justify-center gap-3"
+          >
+            <img src="/icons/book-open.svg" className="w-6 h-6 brightness-0 invert" />
+            Мой каталог реакций
+          </motion.button>
+        </div>
       </div>
     </div>
   );
