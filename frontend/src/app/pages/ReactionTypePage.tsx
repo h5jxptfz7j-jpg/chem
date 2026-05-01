@@ -57,7 +57,6 @@ export function ReactionTypePage() {
         ...m,
         symbol: m.formula?.replace(/\d/g, '') || m.name.substring(0, 2),
       }));
-      // Если режим "Металл + Кислота", оставляем только чистые металлы
       if (type === 'metal-acid' && config.leftState === 'solid') {
         data = data.filter(m => pureMetals.includes(m.name));
       }
@@ -77,7 +76,6 @@ export function ReactionTypePage() {
         ...m,
         symbol: m.formula?.replace(/\d/g, '') || m.name.substring(0, 2),
       }));
-      // Если режим "Металл + Кислота", оставляем только кислоты
       if (type === 'metal-acid' && config.rightState === 'liquid') {
         data = data.filter(m => pureAcids.includes(m.name));
       }
@@ -130,7 +128,6 @@ export function ReactionTypePage() {
       <p className="text-sm text-gray-500 mb-4">Выберите по одному веществу из каждого списка</p>
 
       <div className="flex flex-col md:flex-row gap-4 flex-1">
-        {/* Левый список */}
         <div className="flex-1">
           <h3 className="font-semibold text-emerald-600 mb-2">{config.leftLabel}</h3>
           <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
@@ -151,7 +148,6 @@ export function ReactionTypePage() {
           )}
         </div>
 
-        {/* Правый список */}
         <div className="flex-1">
           <h3 className="font-semibold text-emerald-600 mb-2">{config.rightLabel}</h3>
           <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
