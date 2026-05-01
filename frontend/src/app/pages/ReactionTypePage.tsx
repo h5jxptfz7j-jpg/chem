@@ -18,6 +18,17 @@ const typeConfig: Record<string, ReactionTypeConfig> = {
   'metal-acid': { leftState: 'solid', rightState: 'liquid', leftLabel: 'Металлы', rightLabel: 'Кислоты' },
 };
 
+// === Списки разрешённых названий для режима Металл + Кислота ===
+const pureMetals = ['Железо', 'Медь', 'Цинк', 'Алюминий', 'Натрий', 'Калий'];
+const pureAcids = [
+  'Серная кислота',
+  'Азотная кислота',
+  'Соляная кислота',
+  'Уксусная кислота',
+  'Ортофосфорная кислота',
+  'Пропионовая кислота',
+];
+
 const limit = 20;
 
 export function ReactionTypePage() {
@@ -42,32 +53,40 @@ export function ReactionTypePage() {
     setLoadingLeft(true);
     try {
       const resp = await getMolecules(config.leftState, page * limit, limit);
-      const data = resp.data.map(m => ({
+      let data = resp.data.map(m => ({
         ...m,
         symbol: m.formula?.replace(/\d/g, '') || m.name.substring(0, 2),
       }));
+      // Если режим "Металл + Кислота", оставляем только чистые металлы
+      if (type === 'metal-acid' && config.leftState === 'solid') {
+        data = data.filter(m => pureMetals.includes(m.name));
+      }
       if (page === 0) setLeftMolecules(data);
       else setLeftMolecules(prev => [...prev, ...data]);
       setLeftHasMore(data.length === limit);
     } catch { toast.error('Не удалось загрузить ' + config.leftLabel); }
     finally { setLoadingLeft(false); }
-  }, [config]);
+  }, [config, type]);
 
   const fetchRight = useCallback(async (page: number) => {
     if (!config) return;
     setLoadingRight(true);
     try {
       const resp = await getMolecules(config.rightState, page * limit, limit);
-      const data = resp.data.map(m => ({
+      let data = resp.data.map(m => ({
         ...m,
         symbol: m.formula?.replace(/\d/g, '') || m.name.substring(0, 2),
       }));
+      // Если режим "Металл + Кислота", оставляем только кислоты
+      if (type === 'metal-acid' && config.rightState === 'liquid') {
+        data = data.filter(m => pureAcids.includes(m.name));
+      }
       if (page === 0) setRightMolecules(data);
       else setRightMolecules(prev => [...prev, ...data]);
       setRightHasMore(data.length === limit);
     } catch { toast.error('Не удалось загрузить ' + config.rightLabel); }
     finally { setLoadingRight(false); }
-  }, [config]);
+  }, [config, type]);
 
   useEffect(() => {
     if (!config) return;
@@ -78,34 +97,25 @@ export function ReactionTypePage() {
     setRightPage(0);
     fetchLeft(0);
     fetchRight(0);
-  }, [type]);
+  }, [type, fetchLeft, fetchRight, config]);
 
   const handleLeftSelect = (id: number) => setSelectedLeft(prev => prev === id ? null : id);
   const handleRightSelect = (id: number) => setSelectedRight(prev => prev === id ? null : id);
 
-  const canExecute = selectedLeft !== null && selectedRight !== null;
+  const canExecute = selectedLeft && selectedRight;
 
   const handleExecute = async () => {
     if (!canExecute || !config) return;
-    if (selectedLeft === null || selectedRight === null) return;
-    
+    const reagents = [
+        { id: selectedLeft!, state: config.leftState },
+        { id: selectedRight!, state: config.rightState },
+    ];
     try {
-      // Передаём ID выбранных молекул
-      const response = await executeReaction(
-        [selectedLeft, selectedRight], 
-        'aggregate'
-      );
+      const response = await executeReaction(reagents, 'aggregate');
       setResult(response.data);
-      if (response.data.hint) {
-        toast.info(response.data.hint);
-      } else if (response.data.product_name) {
-        toast.success('Реакция успешно выполнена!');
-      } else {
-        toast.info('Реакция не дала результата');
-      }
-    } catch { 
-      toast.error('Ошибка при выполнении реакции'); 
-    }
+      if (response.data.hint) toast.info(response.data.hint);
+      else toast.success('Реакция успешно выполнена!');
+    } catch { toast.error('Ошибка при выполнении реакции'); }
   };
 
   if (!config) return <div className="p-4 text-red-500">Неизвестный тип реакции</div>;
