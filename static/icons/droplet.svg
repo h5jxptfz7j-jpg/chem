@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <!-- Тело капли -->
-  <path d="M256 80 Q256 80 160 220 Q100 310 100 370 Q100 460 256 460 Q412 460 412 370 Q412 310 352 220 Z" fill="#14B8A6" opacity="0.25" stroke="#14B8A6" stroke-width="20" stroke-linejoin="round"/>
-  <!-- Блик -->
-  <path d="M190 280 Q180 320 185 360" stroke="white" stroke-width="16" stroke-linecap="round" opacity="0.6"/>
-  <ellipse cx="200" cy="260" rx="14" ry="22" fill="white" opacity="0.4" transform="rotate(-30 200 260)"/>
-</svg>
