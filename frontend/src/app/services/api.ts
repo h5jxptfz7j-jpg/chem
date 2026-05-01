@@ -1,3 +1,5 @@
+// frontend/src/app/services/api.ts (исправленная версия)
+
 import axios from 'axios';
 
 const api = axios.create({
@@ -55,11 +57,10 @@ export const executeReaction = (
   mode: string,
   state?: string
 ) => {
-  const normalized = reagents.map((r) =>
-    typeof r === 'number' ? { id: r } : r
-  );
+  // Нормализуем: если объекты, берём только id
+  const ids = reagents.map((r) => (typeof r === 'number' ? r : r.id));
   return api.post<ReactionResult>('/reactions/execute', {
-    reagents: normalized,
+    reagents: ids,
     mode,
     state,
   });
