@@ -7,13 +7,8 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const initData = (window as any).__TG_INIT_DATA__ || '';
   if (initData) {
-    // Основной способ: заголовок Authorization
     config.headers['Authorization'] = `Bearer ${initData}`;
-    // Дополнительно передаём в query-параметрах (надёжнее для CORS)
-    config.params = {
-      ...config.params,
-      tgWebAppData: initData,
-    };
+    config.params = { ...config.params, tgWebAppData: initData };
   }
   return config;
 });
